@@ -138,6 +138,10 @@
               <button class="btn-flat more-btn right" onclick="shopper.toggle('{{_sanitizedid}}', event)"><i class="material-icons">more_vert</i></button>
             </span>
           </div>
+          <div class="card-action">
+            <input type="checkbox" id="checked-list-{{_sanitizedid}}" name="checked-list-{{_sanitzedid}}" {{_checked}} disabled/>
+            <label for="checked-list-{{_sanitized}}">0 items</label>
+          </div>
         </div>
         <div class="list-edit collapsible closed">
           <form id="form-{{_sanitizedid}}" class="col s12 white" onsubmit="shopper.update('{{_id}}', event); reutrn false">

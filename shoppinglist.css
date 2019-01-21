@@ -171,3 +171,7 @@ body[data-list-id] #shopping-list-items {
 body[data-list-id] .goback {
   visibility: initial;
 }
+
+[type='checkbox']:disabled:not(:checked) + label::before {
+  display: none;
+}

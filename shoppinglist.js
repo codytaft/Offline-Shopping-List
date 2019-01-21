@@ -65,6 +65,12 @@
       } else {
         shoppinglists.insertBefore(listdiv, shoppinglists.firstChild);
       }
+
+      if (isItem) {
+        updateItemCount(doc.list);
+      } else {
+        updateItemCount(doc._id);
+      }
     }
   };
 
@@ -73,6 +79,11 @@
     var list = document.getElementById(sanitize(id));
     shopper.toggle(list);
     list.parentElement.removeChild(list);
+
+    let listid = document.body.getAttribute('data-list-id');
+    if (listid) {
+      updateItemCount(listid);
+    }
   };
 
   let shopper = function(themodel) {
@@ -94,6 +105,42 @@
       });
     }
     return this;
+  };
+
+  //figure out the checked items count for a list
+  let updateItemCount = function(listid) {
+    model.get(listid, function(err, doc) {
+      if (err) {
+        console.log(err);
+      } else {
+        model.items(listid, function(err, items) {
+          if (err) {
+            console.log(err);
+          } else {
+            let checked = 0;
+            for (let i = 0; i < items.length; i++) {
+              checked += items[i].checked ? 1 : 0;
+            }
+            let node = document.getElementById(
+              'checked-list-' + sanitize(listid)
+            );
+            if (node) {
+              node.nextElementSibling.innerText = items.length
+                ? checked + ' of ' + items.length + ' items checked'
+                : '0 items';
+              node.checked = checked && checked === items.length;
+              if (
+                (doc.checked && checked !== items.length) ||
+                (!doc.checked && checked === items.length)
+              ) {
+                doc.checked = checked === items.length;
+                model.save(doc);
+              }
+            }
+          }
+        });
+      }
+    });
   };
 
   shopper.openadd = function() {
