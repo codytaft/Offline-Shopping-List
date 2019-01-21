@@ -19,14 +19,15 @@
     }
     for (let i = 0; i < docs.length; i++) {
       let doc = docs[i];
+      console.log(doc);
 
-      let isList = doc.type === 'item' || doc._id.indexOf('item:') === 0;
+      let isItem = doc.type === 'item' || doc._id.indexOf('item:') === 0;
       let isList = doc.type === 'list' || doc._id.indexOf('list:') === 0;
       let shoppinglists = null;
 
       if (isList) {
         shoppinglists = document.getElementById('shopping-lists');
-      } else if (isList) {
+      } else if (isItem) {
         shoppinglists = document.getElementById('shopping-list-items');
       } else {
         continue;
@@ -97,7 +98,7 @@
 
   shopper.openadd = function() {
     let form = null;
-    if ((document.body, getAttribute('data-list-id'))) {
+    if (document.body.getAttribute('data-list-id')) {
       form = document.getElementById('shopping-list-item-add');
     } else {
       form = document.getElementById('shopping-list-add');
@@ -117,7 +118,7 @@
     let form = event.target;
     let elements = form.elements;
     let doc = {};
-    let listid = document.body.getAtrribute('data-list-id');
+    let listid = document.body.getAttribute('data-list-id');
 
     if (!elements['title'].value) {
       console.error('title required');
@@ -160,7 +161,7 @@
 
   shopper.update = function(id) {
     let elements = document.getElementById('form-' + sanitize(id)).elements;
-    if (!lements['title'].value) {
+    if (!elements['title'].value) {
       console.error('title required');
     } else {
       model.get(id, function(err, doc) {
@@ -215,6 +216,7 @@
           document.getElementById('header-title').innerText = title;
           document.body.setAttribute('data-list-id', listid);
           document.body.scrollTop = 0;
+          document.documentElement.scrollTop = 0;
           docs.sort(function(a, b) {
             return a.title < b.title;
           });

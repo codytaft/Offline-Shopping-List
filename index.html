@@ -95,6 +95,7 @@
         </div>
       </form>
     </div>
+
     <!-- modal: adda a shopping list item form -->
     <div class="modal bottom-sheet item-bottom-sheet">
       <form
@@ -162,9 +163,8 @@
     <!-- template: shopping list item -->
     <script type="text/template" id="shopping-list-item-template">
        <div class="item-view collapsible">
-         <input type="checkbox" id="checked-item-{{_sanitizedid}}" name="checked-item-{{_sanitizedid}}" {{_checked}} onclick="shopper.update
-         ('{{_id}}')" value="{{title}}"/>
-         <label for="checked-item-{{_sanitized}}">{{title}}</label>
+         <input type="checkbox" id="checked-item-{{_sanitizedid}}" name="checked-item-{{_sanitizedid}}" {{_checked}} onclick="shopper.update('{{_id}}')" value="{{title}}"/>
+         <label for="checked-item-{{_sanitizedid}}">{{title}}</label>
          <button class="btn-flat more-btn right" onclick="shopper.toggle('{{_sanitizedid}}', event)"><i class="material-icons">more_vert</i></button>
        </div>
        <div class="item-edit collapsible closed">

@@ -130,31 +130,31 @@
           if (typeof callback === 'function') {
             callback(err, null);
           }
-        } else if(doc.type === 'list') {
+        } else if (doc.type === 'list') {
           // remove all children
-          model.items(doc._id, function (err, response) {
+          model.items(doc._id, function(err, response) {
             if (err) {
-              console.error(err)
-              deleteRev(doc._rev)
+              console.error(err);
+              deleteRev(doc._rev);
             } else {
-              let items = response? response.docs || response : response
-              if( items && items.length) {
-                let markfordeletion = items.map(function (item) {
-                  item._deleted = true 
-                  return item
-                })
-                db.bulkDocs(markfordeletion, function (err, response) {
+              let items = response ? response.docs || response : response;
+              if (items && items.length) {
+                let markfordeletion = items.map(function(item) {
+                  item._deleted = true;
+                  return item;
+                });
+                db.bulkDocs(markfordeletion, function(err, response) {
                   if (err) {
-                    console.error(err)
+                    console.error(err);
                   }
-                  deleteRev(doc._rev)
-                })
+                  deleteRev(doc._rev);
+                });
               } else {
-                deleteRev(doc._rev)
+                deleteRev(doc._rev);
               }
             }
-          })
-        }  else {
+          });
+        } else {
           deleteRev(doc._rev);
         }
       });
@@ -165,19 +165,22 @@
     }
   };
 
-  model.items = function (listid, callback) {
-    db.find({
-      selector: {
-        type: 'item',
-        list: listid
+  model.items = function(listid, callback) {
+    db.find(
+      {
+        selector: {
+          type: 'item',
+          list: listid
+        }
+      },
+      function(err, response) {
+        if (typeof callback === 'function') {
+          let docs = response ? response.docs || response : response;
+          callback(err, docs);
+        }
       }
-    }, function (err, response) {
-      if (typeof callback === 'function') {
-        let docs = response ?  response.docs || response : response
-        callback(err, docs)
-      }
-    })
-  }
+    );
+  };
 
   window.addEventListener('DOMContentLoaded', function() {
     window.shopper(model);
