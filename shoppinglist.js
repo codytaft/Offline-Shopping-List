@@ -9,7 +9,7 @@
   };
 
   // add docs to DOM node list
-  let addToList = function(docs, clea) {
+  let addToList = function(docs, clear) {
     if (clear) {
       if (document.body.getAttribute('data-list-id')) {
         document.getElementById('shopping-list-items').innerHTML = '';
