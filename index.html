@@ -196,5 +196,24 @@
     <script src="https://cdn.jsdelivr.net/npm/pouchdb@6.3.4/dist/pouchdb.find.min.js"></script>
     <script src="shoppinglist.js"></script>
     <script src="shoppinglist.model.js"></script>
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          //register service worker
+          navigator.serviceWorker.register('worker.js').then(
+            function(registration) {
+              console.log(
+                'ServiceWorker registration successful with scope: ',
+                registration.scope
+              );
+            },
+            function(err) {
+              console.log('ServiceWorker registration failed: ', err);
+            }
+          );
+        });
+      }
+    </script>
   </body>
 </html>
