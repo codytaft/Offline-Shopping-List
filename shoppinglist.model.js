@@ -29,7 +29,7 @@
 
   // Shopping List Item Schema
   // https://github.com/ibm-watson-data-lab/shopping-list#shopping-list-item-example
-  var initItemDoc = function(doc, listid) {
+  let initItemDoc = function(doc, listid) {
     return {
       _id: 'item:' + new Date().toISOString(),
       type: 'item',
@@ -130,6 +130,30 @@
           if (typeof callback === 'function') {
             callback(err, null);
           }
+        } else if (doc.type === 'list') {
+          // remove all children
+          model.items(doc._id, function(err, response) {
+            if (err) {
+              console.error(err);
+              deleteRev(doc._rev);
+            } else {
+              let items = response ? response.docs || response : response;
+              if (items && items.length) {
+                let markfordeletion = items.map(function(item) {
+                  item._deleted = true;
+                  return item;
+                });
+                db.bulkDocs(markfordeletion, function(err, response) {
+                  if (err) {
+                    console.error(err);
+                  }
+                  deleteRev(doc._rev);
+                });
+              } else {
+                deleteRev(doc._rev);
+              }
+            }
+          });
         } else {
           deleteRev(doc._rev);
         }
@@ -139,6 +163,23 @@
         callback(new Error('Missing doc id'), null);
       }
     }
+  };
+
+  model.items = function(listid, callback) {
+    db.find(
+      {
+        selector: {
+          type: 'item',
+          list: listid
+        }
+      },
+      function(err, response) {
+        if (typeof callback === 'function') {
+          let docs = response ? response.docs || response : response;
+          callback(err, docs);
+        }
+      }
+    );
   };
 
   window.addEventListener('DOMContentLoaded', function() {

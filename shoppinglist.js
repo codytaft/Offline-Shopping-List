@@ -9,7 +9,7 @@
   };
 
   // add docs to DOM node list
-  let addToList = function(docs, clea) {
+  let addToList = function(docs, clear) {
     if (clear) {
       if (document.body.getAttribute('data-list-id')) {
         document.getElementById('shopping-list-items').innerHTML = '';
@@ -19,14 +19,15 @@
     }
     for (let i = 0; i < docs.length; i++) {
       let doc = docs[i];
+      console.log(doc);
 
-      let isList = doc.type === 'item' || doc._id.indexOf('item:') === 0;
+      let isItem = doc.type === 'item' || doc._id.indexOf('item:') === 0;
       let isList = doc.type === 'list' || doc._id.indexOf('list:') === 0;
       let shoppinglists = null;
 
       if (isList) {
         shoppinglists = document.getElementById('shopping-lists');
-      } else if (isList) {
+      } else if (isItem) {
         shoppinglists = document.getElementById('shopping-list-items');
       } else {
         continue;
@@ -64,6 +65,12 @@
       } else {
         shoppinglists.insertBefore(listdiv, shoppinglists.firstChild);
       }
+
+      if (isItem) {
+        updateItemCount(doc.list);
+      } else {
+        updateItemCount(doc._id);
+      }
     }
   };
 
@@ -72,6 +79,11 @@
     var list = document.getElementById(sanitize(id));
     shopper.toggle(list);
     list.parentElement.removeChild(list);
+
+    let listid = document.body.getAttribute('data-list-id');
+    if (listid) {
+      updateItemCount(listid);
+    }
   };
 
   let shopper = function(themodel) {
@@ -95,9 +107,45 @@
     return this;
   };
 
+  //figure out the checked items count for a list
+  let updateItemCount = function(listid) {
+    model.get(listid, function(err, doc) {
+      if (err) {
+        console.log(err);
+      } else {
+        model.items(listid, function(err, items) {
+          if (err) {
+            console.log(err);
+          } else {
+            let checked = 0;
+            for (let i = 0; i < items.length; i++) {
+              checked += items[i].checked ? 1 : 0;
+            }
+            let node = document.getElementById(
+              'checked-list-' + sanitize(listid)
+            );
+            if (node) {
+              node.nextElementSibling.innerText = items.length
+                ? checked + ' of ' + items.length + ' items checked'
+                : '0 items';
+              node.checked = checked && checked === items.length;
+              if (
+                (doc.checked && checked !== items.length) ||
+                (!doc.checked && checked === items.length)
+              ) {
+                doc.checked = checked === items.length;
+                model.save(doc);
+              }
+            }
+          }
+        });
+      }
+    });
+  };
+
   shopper.openadd = function() {
     let form = null;
-    if ((document.body, getAttribute('data-list-id'))) {
+    if (document.body.getAttribute('data-list-id')) {
       form = document.getElementById('shopping-list-item-add');
     } else {
       form = document.getElementById('shopping-list-add');
@@ -117,7 +165,7 @@
     let form = event.target;
     let elements = form.elements;
     let doc = {};
-    let listid = document.body.getAtrribute('data-list-id');
+    let listid = document.body.getAttribute('data-list-id');
 
     if (!elements['title'].value) {
       console.error('title required');
@@ -160,7 +208,7 @@
 
   shopper.update = function(id) {
     let elements = document.getElementById('form-' + sanitize(id)).elements;
-    if (!lements['title'].value) {
+    if (!elements['title'].value) {
       console.error('title required');
     } else {
       model.get(id, function(err, doc) {
@@ -215,6 +263,7 @@
           document.getElementById('header-title').innerText = title;
           document.body.setAttribute('data-list-id', listid);
           document.body.scrollTop = 0;
+          document.documentElement.scrollTop = 0;
           docs.sort(function(a, b) {
             return a.title < b.title;
           });
