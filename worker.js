@@ -1,3 +1,6 @@
+/* global self, caches, fetch */
+'use strict';
+
 let CACHE_NAME = 'v1';
 
 let urlstocache = [
@@ -44,20 +47,15 @@ self.addEventListener('install', function(event) {
 });
 
 //intercept page requests
-self.addEventListener('activate', function(event) {
-  console.log('worker activated');
-  event.waitUntil(
-    caches.keys().then(function(keys) {
-      return Promise.all(
-        keys
-          .filter(function(key) {
-            //filter old versioned keys
-            return key !== CACHE_NAME;
-          })
-          .map(function(key) {
-            return caches.delete(key);
-          })
-      );
+self.addEventListener('fetch', function(event) {
+  console.log('fetch', event.request.url);
+  event.respondWith(
+    caches.open(CACHE_NAME).then(function(cache) {
+      // try from network first
+      return fromnetwork(event.request, cache).catch(function() {
+        // network failed retrieve from cache
+        return cache.match(event.request);
+      });
     })
   );
 });
