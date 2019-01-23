@@ -1,0 +1,24 @@
+{
+  "name": "offline-shopping-vanillajs",
+  "version": "1.0.0",
+  "description": "Made with:  https://github.com/ibm-watson-data-lab/shopping-list-vanillajs-pouchdb",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.16.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codytaft/Offline-Shopping-List.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/codytaft/Offline-Shopping-List/issues"
+  },
+  "homepage": "https://github.com/codytaft/Offline-Shopping-List#readme"
+}
