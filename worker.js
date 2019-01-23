@@ -1,8 +1,19 @@
+/* global self, caches, fetch */
+'use strict';
+
 let CACHE_NAME = 'v1';
 
 let urlstocache = [
   '/',
   'index.html',
+  'favicons/android-chrome-192x192.png',
+  'favicons/android-chrome-512x512.png',
+  'favicons/apple-touch-icon.png',
+  'favicons/favicon-16x16.png',
+  'favicons/favicon-32x32.png',
+  'favicons/favicon.ico',
+  'favicons/mstile-150x150.png',
+  'favicons/safari-pinned-tab.svg',
   'https://fonts.googleapis.com/icon?family=Material+Icons',
   'https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700',
   'https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css',
@@ -36,20 +47,15 @@ self.addEventListener('install', function(event) {
 });
 
 //intercept page requests
-self.addEventListener('activate', function(event) {
-  console.log('worker activated');
-  event.waitUntil(
-    caches.keys().then(function(keys) {
-      return Promise.all(
-        keys
-          .filter(function(key) {
-            //filter old versioned keys
-            return key !== CACHE_NAME;
-          })
-          .map(function(key) {
-            return caches.delete(key);
-          })
-      );
+self.addEventListener('fetch', function(event) {
+  console.log('fetch', event.request.url);
+  event.respondWith(
+    caches.open(CACHE_NAME).then(function(cache) {
+      // try from network first
+      return fromnetwork(event.request, cache).catch(function() {
+        // network failed retrieve from cache
+        return cache.match(event.request);
+      });
     })
   );
 });
