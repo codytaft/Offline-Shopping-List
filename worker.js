@@ -26,7 +26,7 @@ let urlstocache = [
 
 let fromnetwork = function(request, cache) {
   return fetch(request).then(function(response) {
-    if (reuest.url.indexOf('https://fonts.gstatic.com') === 0) {
+    if (request.url.indexOf('https://fonts.gstatic.com') === 0) {
       //cache fonts
       if (response.status < 400) {
         cache.put(request, response.clone());
